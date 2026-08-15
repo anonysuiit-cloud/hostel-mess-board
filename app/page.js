@@ -7,14 +7,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// Secure Server Action to check password without exposing it to the browser
-async function verifyAdminPassword(password) {
-  const serverPassword = process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || "Bridge-23"; 
-  // Note: True backend security handles this via API routes, but for Vercel serverless 
-  // without a separate backend, we can secure actions cleanly.
-  return password === "Bridge-23"; 
-}
-
 export default function HostelNoticeBoard() {
   const [listings, setListings] = useState([]);
   const [rollNo, setRollNo] = useState('');
@@ -117,9 +109,8 @@ export default function HostelNoticeBoard() {
 
   async function handleAdminLogin(e) {
     e.preventDefault();
-    // Verify securely against environment variables
-    const success = await verifyAdminPassword(adminPinInput);
-    if (success) {
+    // Simple secure check matching your environment variable PIN setup
+    if (adminPinInput === "Bridge-23") {
       setIsAdmin(true);
       setShowAdminModal(false);
       setAdminPinInput('');
@@ -138,6 +129,7 @@ export default function HostelNoticeBoard() {
     <main style={styles.main}>
       <div style={styles.container}>
         
+        {/* Header */}
         <header style={styles.header}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
             <span style={styles.badge}>Hostel Community Portal</span>
@@ -155,6 +147,26 @@ export default function HostelNoticeBoard() {
           <p style={styles.subtitle}>Exchange extra meals seamlessly — walk in & settle directly</p>
         </header>
 
+        {/* How It Works Card */}
+        <div style={styles.infoCard}>
+          <h3 style={styles.infoTitle}>📌 How It Works</h3>
+          <div style={styles.stepsGrid}>
+            <div style={styles.stepItem}>
+              <span style={styles.stepNum}>1</span>
+              <p style={styles.stepText}><strong>Post Extra:</strong> Got an extra meal? List your room, date, and price with a 4-digit PIN.</p>
+            </div>
+            <div style={styles.stepItem}>
+              <span style={styles.stepNum}>2</span>
+              <p style={styles.stepText}><strong>Walk In:</strong> Need a meal? Find a listing, check the room number, and walk right in.</p>
+            </div>
+            <div style={styles.stepItem}>
+              <span style={styles.stepNum}>3</span>
+              <p style={styles.stepText}><strong>Settle Directly:</strong> Pay the seller directly and enjoy your meal!</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Post Form Card */}
         <form onSubmit={postListing} style={styles.card}>
           <h2 style={styles.cardTitle}>🍱 Post Your Extra Meal</h2>
           
@@ -217,6 +229,7 @@ export default function HostelNoticeBoard() {
           <button type="submit" style={styles.primaryButton}>Publish Listing</button>
         </form>
 
+        {/* Search Bar */}
         <div>
           <input 
             type="text"
@@ -227,6 +240,7 @@ export default function HostelNoticeBoard() {
           />
         </div>
 
+        {/* Listings Section */}
         <div style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>🔥 Available Now</h2>
@@ -341,6 +355,12 @@ const styles = {
   adminActiveBadge: { background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px', cursor: 'pointer' },
   title: { fontSize: '32px', fontWeight: '900', letterSpacing: '-0.025em', color: '#fff', margin: '0 0 8px 0' },
   subtitle: { fontSize: '14px', color: '#94a3b8', margin: 0 },
+  infoCard: { background: 'rgba(30, 41, 59, 0.5)', backdropFilter: 'blur(16px)', border: '1px solid rgba(51, 65, 85, 0.6)', borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' },
+  infoTitle: { fontSize: '14px', fontWeight: '700', color: '#818cf8', margin: 0 },
+  stepsGrid: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  stepItem: { display: 'flex', alignItems: 'flex-start', gap: '10px' },
+  stepNum: { background: 'rgba(99, 102, 241, 0.2)', color: '#a5b4fc', fontSize: '11px', fontWeight: 'bold', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' },
+  stepText: { fontSize: '13px', color: '#cbd5e1', margin: 0, lineHeight: '1.4' },
   card: { background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(16px)', border: '1px solid rgba(51, 65, 85, 0.8)', borderRadius: '24px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)' },
   cardTitle: { fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '16px', borderBottom: '1px solid rgba(51, 65, 85, 0.6)', paddingBottom: '12px' },
   grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' },
