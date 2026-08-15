@@ -141,7 +141,6 @@ export default function HostelNoticeBoard() {
               <option>Full Day</option>
               <option>Lunch</option>
               <option>Dinner</option>
-              <option>Breakfast</option>
             </select>
             
             <input 
