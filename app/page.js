@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const MASTER_PIN = "9999";
+const MASTER_PIN = "Bridge-23";
 
 export default function HostelNoticeBoard() {
   const [listings, setListings] = useState([]);
@@ -25,9 +25,15 @@ export default function HostelNoticeBoard() {
   const [pin, setPin] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Seller Action Modal
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [actionType, setActionType] = useState('');
   const [inputPin, setInputPin] = useState('');
+
+  // Admin State
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [adminPinInput, setAdminPinInput] = useState('');
 
   useEffect(() => {
     fetchListings();
@@ -72,11 +78,16 @@ export default function HostelNoticeBoard() {
   }
 
   async function handleSellerAction() {
-    const isAuthorized = inputPin === selectedMeal.seller_pin || inputPin === MASTER_PIN;
-    if (!isAuthorized) return alert('Incorrect PIN!');
+    const isAuthorized = isAdmin || inputPin === selectedMeal?.seller_pin || inputPin === MASTER_PIN;
+
+    if (!isAuthorized) {
+      return alert('Incorrect PIN!');
+    }
 
     if (actionType === 'SOLD') {
       await supabase.from('meal_board').update({ status: 'SOLD' }).eq('id', selectedMeal.id);
+    } else if (actionType === 'AVAILABLE') {
+      await supabase.from('meal_board').update({ status: 'AVAILABLE' }).eq('id', selectedMeal.id);
     } else if (actionType === 'DELETE') {
       await supabase.from('meal_board').delete().eq('id', selectedMeal.id);
     }
@@ -84,6 +95,29 @@ export default function HostelNoticeBoard() {
     setSelectedMeal(null);
     setInputPin('');
     fetchListings();
+  }
+
+  async function handleDirectAdminAction(meal, action) {
+    if (action === 'TOGGLE_STATUS') {
+      const newStatus = meal.status === 'SOLD' ? 'AVAILABLE' : 'SOLD';
+      await supabase.from('meal_board').update({ status: newStatus }).eq('id', meal.id);
+    } else if (action === 'DELETE') {
+      if (confirm(`Admin: Delete listing for Roll No: ${meal.roll_no}?`)) {
+        await supabase.from('meal_board').delete().eq('id', meal.id);
+      }
+    }
+    fetchListings();
+  }
+
+  function handleAdminLogin(e) {
+    e.preventDefault();
+    if (adminPinInput === MASTER_PIN) {
+      setIsAdmin(true);
+      setShowAdminModal(false);
+      setAdminPinInput('');
+    } else {
+      alert('Invalid Master PIN');
+    }
   }
 
   const filteredListings = listings.filter(meal => {
@@ -96,14 +130,23 @@ export default function HostelNoticeBoard() {
     <main style={styles.main}>
       <div style={styles.container}>
         
-        {/* Header */}
         <header style={styles.header}>
-          <span style={styles.badge}>Hostel Community Portal</span>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <span style={styles.badge}>Hostel Community Portal</span>
+            {isAdmin ? (
+              <button onClick={() => setIsAdmin(false)} style={styles.adminActiveBadge}>
+                🛡️ Admin Mode (Logout)
+              </button>
+            ) : (
+              <button onClick={() => setShowAdminModal(true)} style={styles.adminLoginBtn}>
+                🔐 Admin
+              </button>
+            )}
+          </div>
           <h1 style={styles.title}>Hostel Mess Board</h1>
           <p style={styles.subtitle}>Exchange extra meals seamlessly — walk in & settle directly</p>
         </header>
 
-        {/* Post Form Card */}
         <form onSubmit={postListing} style={styles.card}>
           <h2 style={styles.cardTitle}>🍱 Post Your Extra Meal</h2>
           
@@ -166,7 +209,6 @@ export default function HostelNoticeBoard() {
           <button type="submit" style={styles.primaryButton}>Publish Listing</button>
         </form>
 
-        {/* Search Bar */}
         <div>
           <input 
             type="text"
@@ -177,7 +219,6 @@ export default function HostelNoticeBoard() {
           />
         </div>
 
-        {/* Listings Section */}
         <div style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>🔥 Available Now</h2>
@@ -192,7 +233,7 @@ export default function HostelNoticeBoard() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {filteredListings.map(meal => (
-              <div key={meal.id} style={{ ...styles.listingCard, opacity: meal.status === 'SOLD' ? 0.4 : 1 }}>
+              <div key={meal.id} style={{ ...styles.listingCard, opacity: meal.status === 'SOLD' ? 0.5 : 1 }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={styles.priceTag}>₹{meal.price}</span>
@@ -208,22 +249,34 @@ export default function HostelNoticeBoard() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {meal.status !== 'SOLD' && (
-                    <button onClick={() => { setSelectedMeal(meal); setActionType('SOLD'); }} style={styles.actionBtn}>
-                      Mark Sold
-                    </button>
+                  {isAdmin ? (
+                    <>
+                      <button onClick={() => handleDirectAdminAction(meal, 'TOGGLE_STATUS')} style={styles.adminActionBtn}>
+                        {meal.status === 'SOLD' ? 'Make Active' : 'Mark Sold'}
+                      </button>
+                      <button onClick={() => handleDirectAdminAction(meal, 'DELETE')} style={styles.deleteBtn}>
+                        Admin Delete
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {meal.status !== 'SOLD' && (
+                        <button onClick={() => { setSelectedMeal(meal); setActionType('SOLD'); }} style={styles.actionBtn}>
+                          Mark Sold
+                        </button>
+                      )}
+                      <button onClick={() => { setSelectedMeal(meal); setActionType('DELETE'); }} style={styles.deleteBtn}>
+                        Delete
+                      </button>
+                    </>
                   )}
-                  <button onClick={() => { setSelectedMeal(meal); setActionType('DELETE'); }} style={styles.deleteBtn}>
-                    Delete
-                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* PIN Modal */}
-        {selectedMeal && (
+        {selectedMeal && !isAdmin && (
           <div style={styles.modalOverlay}>
             <div style={styles.modalCard}>
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#fff', marginBottom: '4px' }}>Enter 4-Digit PIN</h3>
@@ -245,6 +298,27 @@ export default function HostelNoticeBoard() {
           </div>
         )}
 
+        {showAdminModal && (
+          <div style={styles.modalOverlay}>
+            <form onSubmit={handleAdminLogin} style={styles.modalCard}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#fff', marginBottom: '4px' }}>Admin Master Login</h3>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '16px' }}>Enter Master PIN to gain full administrative control</p>
+              <input 
+                autoFocus
+                type="password" 
+                placeholder="Password" 
+                value={adminPinInput} 
+                onChange={e => setAdminPinInput(e.target.value)} 
+                style={styles.modalInput}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" style={styles.modalConfirmBtn}>Unlock</button>
+                <button type="button" onClick={() => { setShowAdminModal(false); setAdminPinInput(''); }} style={styles.modalCloseBtn}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        )}
+
       </div>
     </main>
   );
@@ -254,7 +328,9 @@ const styles = {
   main: { minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)', color: '#f8fafc', padding: '40px 16px', fontFamily: 'system-ui, sans-serif' },
   container: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' },
   header: { textAlign: 'center' },
-  badge: { display: 'inline-block', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: '#818cf8', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase', marginBottom: '12px' },
+  badge: { display: 'inline-block', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: '#818cf8', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase' },
+  adminLoginBtn: { background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: '#94a3b8', fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '20px', cursor: 'pointer' },
+  adminActiveBadge: { background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px', cursor: 'pointer' },
   title: { fontSize: '32px', fontWeight: '900', letterSpacing: '-0.025em', color: '#fff', margin: '0 0 8px 0' },
   subtitle: { fontSize: '14px', color: '#94a3b8', margin: 0 },
   card: { background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(16px)', border: '1px solid rgba(51, 65, 85, 0.8)', borderRadius: '24px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)' },
@@ -273,10 +349,11 @@ const styles = {
   mealBadge: { fontSize: '11px', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: '#a5b4fc', padding: '4px 10px', borderRadius: '8px', fontWeight: '600' },
   soldBadge: { display: 'inline-block', marginTop: '6px', fontSize: '11px', fontWeight: '700', color: '#f87171', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 8px', borderRadius: '6px' },
   actionBtn: { fontSize: '12px', background: '#334155', border: '1px solid #475569', color: '#f1f5f9', padding: '6px 12px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' },
+  adminActionBtn: { fontSize: '12px', background: '#4338ca', border: '1px solid #6366f1', color: '#fff', padding: '6px 12px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' },
   deleteBtn: { fontSize: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#f87171', padding: '6px 12px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' },
   modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 50 },
   modalCard: { background: '#1e293b', border: '1px solid #334155', padding: '24px', borderRadius: '24px', maxWidth: '320px', width: '100%', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' },
-  modalInput: { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '12px', width: '100%', textAlign: 'center', fontSize: '20px', letterSpacing: '8px', color: '#fff', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' },
+  modalInput: { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '12px', width: '100%', textAlign: 'center', fontSize: '18px', color: '#fff', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' },
   modalConfirmBtn: { flex: 1, background: '#4f46e5', color: '#fff', padding: '12px', borderRadius: '12px', border: 'none', fontWeight: '600', cursor: 'pointer', fontSize: '14px' },
   modalCloseBtn: { flex: 1, background: '#334155', color: '#cbd5e1', padding: '12px', borderRadius: '12px', border: 'none', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }
 };
