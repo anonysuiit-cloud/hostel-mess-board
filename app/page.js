@@ -93,42 +93,34 @@ export default function HostelNoticeBoard() {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-100 py-10 px-4 sm:px-6">
-      <div className="max-w-xl mx-auto space-y-8">
+    <main style={styles.main}>
+      <div style={styles.container}>
         
         {/* Header */}
-        <header className="text-center space-y-2">
-          <div className="inline-block bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-1">
-            Hostel Community Portal
-          </div>
-          <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
-            Hostel Mess Board
-          </h1>
-          <p className="text-sm text-slate-400">Exchange extra meals seamlessly — walk in & settle directly</p>
+        <header style={styles.header}>
+          <span style={styles.badge}>Hostel Community Portal</span>
+          <h1 style={styles.title}>Hostel Mess Board</h1>
+          <p style={styles.subtitle}>Exchange extra meals seamlessly — walk in & settle directly</p>
         </header>
 
         {/* Post Form Card */}
-        <form onSubmit={postListing} className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/60 rounded-3xl p-6 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
-            <h2 className="font-bold text-base text-white flex items-center gap-2">
-              <span>🍱</span> Post Your Extra Meal
-            </h2>
-          </div>
+        <form onSubmit={postListing} style={styles.card}>
+          <h2 style={styles.cardTitle}>🍱 Post Your Extra Meal</h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div style={styles.grid}>
             <input 
               required 
               placeholder="Roll No (e.g. 07)" 
               value={rollNo} 
               onChange={e => setRollNo(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white placeholder-slate-500 transition" 
+              style={styles.input} 
             />
             <input 
               required 
               placeholder="Room No (e.g. B-204)" 
               value={roomNo} 
               onChange={e => setRoomNo(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white placeholder-slate-500 transition" 
+              style={styles.input} 
             />
             
             <input 
@@ -138,18 +130,18 @@ export default function HostelNoticeBoard() {
               max={maxDateStr}
               value={mealDate} 
               onChange={e => setMealDate(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white transition" 
+              style={styles.input} 
             />
             
             <select 
               value={mealType} 
               onChange={e => setMealType(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white transition"
+              style={styles.input}
             >
-              <option className="bg-slate-900">Full Day</option>
-              <option className="bg-slate-900">Lunch</option>
-              <option className="bg-slate-900">Dinner</option>
-              <option className="bg-slate-900">Breakfast</option>
+              <option>Full Day</option>
+              <option>Lunch</option>
+              <option>Dinner</option>
+              <option>Breakfast</option>
             </select>
             
             <input 
@@ -158,7 +150,7 @@ export default function HostelNoticeBoard() {
               placeholder="Price (₹)" 
               value={price} 
               onChange={e => setPrice(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white placeholder-slate-500 transition" 
+              style={styles.input} 
             />
             
             <input 
@@ -168,65 +160,61 @@ export default function HostelNoticeBoard() {
               placeholder="4-Digit PIN" 
               value={pin} 
               onChange={e => setPin(e.target.value)} 
-              className="bg-slate-900/50 border border-slate-700 p-3 rounded-xl text-sm tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none text-white placeholder-slate-500 transition" 
+              style={styles.input} 
             />
           </div>
 
-          <button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-indigo-500/25 transition-all transform active:scale-[0.98]">
-            Publish Listing
-          </button>
+          <button type="submit" style={styles.primaryButton}>Publish Listing</button>
         </form>
 
         {/* Search Bar */}
-        <div className="relative">
+        <div>
           <input 
             type="text"
             placeholder="🔍 Search by your Roll No or Room No..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-800/60 backdrop-blur-xl border border-slate-700/60 p-3.5 pl-4 rounded-2xl text-sm text-white placeholder-slate-400 shadow-inner focus:ring-2 focus:ring-indigo-500 outline-none transition"
+            style={styles.searchBar}
           />
         </div>
 
         {/* Listings Section */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center px-1">
-            <h2 className="font-bold text-lg text-white flex items-center gap-2">
-              <span>🔥</span> Available Now
-            </h2>
-            <span className="text-xs bg-slate-800 border border-slate-700 text-slate-400 px-3 py-1 rounded-full">Next 7 Days</span>
+        <div style={styles.section}>
+          <div style={styles.sectionHeader}>
+            <h2 style={styles.sectionTitle}>🔥 Available Now</h2>
+            <span style={styles.subBadge}>Next 7 Days</span>
           </div>
 
           {filteredListings.length === 0 && (
-            <div className="bg-slate-800/30 border border-dashed border-slate-700/80 rounded-3xl p-10 text-center text-slate-400 text-sm">
+            <div style={styles.emptyCard}>
               {searchQuery ? 'No matching listings found.' : 'No extra meals listed right now.'}
             </div>
           )}
 
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {filteredListings.map(meal => (
-              <div key={meal.id} className={`bg-slate-800/60 backdrop-blur-xl border border-slate-700/60 rounded-2xl p-4 flex justify-between items-center shadow-lg transition-all ${meal.status === 'SOLD' ? 'opacity-40 bg-slate-900/40' : 'hover:border-indigo-500/50'}`}>
+              <div key={meal.id} style={{ ...styles.listingCard, opacity: meal.status === 'SOLD' ? 0.4 : 1 }}>
                 <div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl font-black text-emerald-400">₹{meal.price}</span>
-                    <span className="text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-lg font-semibold">{meal.meal_type}</span>
-                    <span className="text-xs text-slate-400 font-medium">{meal.meal_date}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={styles.priceTag}>₹{meal.price}</span>
+                    <span style={styles.mealBadge}>{meal.meal_type}</span>
+                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{meal.meal_date}</span>
                   </div>
-                  <p className="text-sm mt-2 text-slate-300">
-                    Room: <strong className="text-white font-semibold">{meal.room_no}</strong> | Roll: <strong className="text-white">{meal.roll_no}</strong>
+                  <p style={{ fontSize: '14px', marginTop: '8px', color: '#cbd5e1' }}>
+                    Room: <strong style={{ color: '#fff' }}>{meal.room_no}</strong> | Roll: <strong style={{ color: '#fff' }}>{meal.roll_no}</strong>
                   </p>
                   {meal.status === 'SOLD' && (
-                    <span className="inline-block mt-1.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-0.5 rounded-full">SOLD OUT</span>
+                    <span style={styles.soldBadge}>SOLD OUT</span>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {meal.status !== 'SOLD' && (
-                    <button onClick={() => { setSelectedMeal(meal); setActionType('SOLD'); }} className="text-xs bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-slate-200 px-3 py-1.5 rounded-xl font-semibold transition">
+                    <button onClick={() => { setSelectedMeal(meal); setActionType('SOLD'); }} style={styles.actionBtn}>
                       Mark Sold
                     </button>
                   )}
-                  <button onClick={() => { setSelectedMeal(meal); setActionType('DELETE'); }} className="text-xs text-red-400 hover:bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl font-medium transition">
+                  <button onClick={() => { setSelectedMeal(meal); setActionType('DELETE'); }} style={styles.deleteBtn}>
                     Delete
                   </button>
                 </div>
@@ -237,12 +225,10 @@ export default function HostelNoticeBoard() {
 
         {/* PIN Modal */}
         {selectedMeal && (
-          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl max-w-xs w-full space-y-4 shadow-2xl">
-              <div>
-                <h3 className="font-bold text-base text-white">Enter 4-Digit PIN</h3>
-                <p className="text-xs text-slate-400 mt-1">Required to modify listing for Roll No: {selectedMeal.roll_no}</p>
-              </div>
+          <div style={styles.modalOverlay}>
+            <div style={styles.modalCard}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#fff', marginBottom: '4px' }}>Enter 4-Digit PIN</h3>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '16px' }}>Required to modify listing for Roll No: {selectedMeal.roll_no}</p>
               <input 
                 autoFocus
                 type="password" 
@@ -250,11 +236,11 @@ export default function HostelNoticeBoard() {
                 placeholder="••••" 
                 value={inputPin} 
                 onChange={e => setInputPin(e.target.value)} 
-                className="bg-slate-800 border border-slate-700 p-3 rounded-xl w-full text-center text-2xl tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none text-white"
+                style={styles.modalInput}
               />
-              <div className="flex gap-2 pt-2">
-                <button onClick={handleSellerAction} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-sm font-semibold transition">Confirm</button>
-                <button onClick={() => { setSelectedMeal(null); setInputPin(''); }} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl text-sm font-semibold transition">Close</button>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={handleSellerAction} style={styles.modalConfirmBtn}>Confirm</button>
+                <button onClick={() => { setSelectedMeal(null); setInputPin(''); }} style={styles.modalCloseBtn}>Close</button>
               </div>
             </div>
           </div>
@@ -264,3 +250,34 @@ export default function HostelNoticeBoard() {
     </main>
   );
 }
+
+const styles = {
+  main: { minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)', color: '#f8fafc', padding: '40px 16px', fontFamily: 'system-ui, sans-serif' },
+  container: { maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' },
+  header: { textAlign: 'center' },
+  badge: { display: 'inline-block', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: '#818cf8', fontSize: '11px', fontWeight: '700', padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase', marginBottom: '12px' },
+  title: { fontSize: '32px', fontWeight: '900', letterSpacing: '-0.025em', color: '#fff', margin: '0 0 8px 0' },
+  subtitle: { fontSize: '14px', color: '#94a3b8', margin: 0 },
+  card: { background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(16px)', border: '1px solid rgba(51, 65, 85, 0.8)', borderRadius: '24px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)' },
+  cardTitle: { fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '16px', borderBottom: '1px solid rgba(51, 65, 85, 0.6)', paddingBottom: '12px' },
+  grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' },
+  input: { width: '100%', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid #334155', padding: '12px', borderRadius: '12px', fontSize: '14px', color: '#fff', outline: 'none', boxSizing: 'border-box' },
+  primaryButton: { width: '100%', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', fontWeight: '600', padding: '14px', borderRadius: '12px', border: 'none', cursor: 'pointer', fontSize: '14px', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' },
+  searchBar: { width: '100%', background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(51, 65, 85, 0.8)', padding: '14px 16px', borderRadius: '16px', fontSize: '14px', color: '#fff', outline: 'none', boxSizing: 'border-box' },
+  section: { display: 'flex', flexDirection: 'column', gap: '14px' },
+  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  sectionTitle: { fontSize: '18px', fontWeight: '700', color: '#fff', margin: 0 },
+  subBadge: { fontSize: '12px', background: '#1e293b', border: '1px solid #334155', color: '#94a3b8', padding: '4px 12px', borderRadius: '20px' },
+  emptyCard: { background: 'rgba(30, 41, 59, 0.3)', border: '1px dashed #334155', borderRadius: '20px', padding: '32px', textAlign: 'center', color: '#94a3b8', fontSize: '14px' },
+  listingCard: { background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(16px)', border: '1px solid rgba(51, 65, 85, 0.8)', borderRadius: '20px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' },
+  priceTag: { fontSize: '22px', fontWeight: '900', color: '#34d399' },
+  mealBadge: { fontSize: '11px', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: '#a5b4fc', padding: '4px 10px', borderRadius: '8px', fontWeight: '600' },
+  soldBadge: { display: 'inline-block', marginTop: '6px', fontSize: '11px', fontWeight: '700', color: '#f87171', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 8px', borderRadius: '6px' },
+  actionBtn: { fontSize: '12px', background: '#334155', border: '1px solid #475569', color: '#f1f5f9', padding: '6px 12px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' },
+  deleteBtn: { fontSize: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#f87171', padding: '6px 12px', borderRadius: '10px', fontWeight: '600', cursor: 'pointer' },
+  modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 50 },
+  modalCard: { background: '#1e293b', border: '1px solid #334155', padding: '24px', borderRadius: '24px', maxWidth: '320px', width: '100%', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' },
+  modalInput: { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '12px', width: '100%', textAlign: 'center', fontSize: '20px', letterSpacing: '8px', color: '#fff', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' },
+  modalConfirmBtn: { flex: 1, background: '#4f46e5', color: '#fff', padding: '12px', borderRadius: '12px', border: 'none', fontWeight: '600', cursor: 'pointer', fontSize: '14px' },
+  modalCloseBtn: { flex: 1, background: '#334155', color: '#cbd5e1', padding: '12px', borderRadius: '12px', border: 'none', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }
+};
